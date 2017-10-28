@@ -50741,7 +50741,14 @@ function Instructions() {
 		__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
 		' ',
 		__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
-		'Note. You cannot consolelog here. But I have exposed the above inside the client logs as well'
+		'RESTRICTIONS : ',
+		__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
+		'- You cannot consolelog here. But I have exposed the above inside the client logs as well ',
+		__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
+		'- Ecmascript 6 is not supported ',
+		__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null),
+		'- You probably cannot comment code. ',
+		__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement('br', null)
 	);
 }
 

@@ -16,8 +16,11 @@ export default function Instructions() {
 			{'{'} <br />
 			tie : [ array of player names and their moves ],<br />
 		  move : move that resulted in tie<br />
-		{'}'}<br /> <br />
-			Note. You cannot consolelog here. But I have exposed the above inside the client logs as well
+			{'}'}<br /> <br />
+			RESTRICTIONS : <br /> 
+		- You cannot consolelog here. But I have exposed the above inside the client logs as well <br />
+		- Ecmascript 6 is not supported <br />
+		- You probably cannot comment code. <br />
 		</pre>
 	)
 }
