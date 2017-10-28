@@ -14,7 +14,8 @@ class CodeEditor extends Component {
 			codeText : "function(history) { return 'rock'}", 
 			playerName : "player name",
 			result : "",
-			challenger : ""
+			challenger : "",
+			joinDisable : false
 		}
 		this.joinGame = this.joinGame.bind(this)
 		this.runCode = this.runCode.bind(this)
@@ -37,6 +38,7 @@ class CodeEditor extends Component {
 		if (props.history.length != this.props.history.length) {
 			console.log('received props')
 			socket.emit('historyUpdated')
+			this.setState({joinDisable : false})
 		}
 	}
 
@@ -62,6 +64,7 @@ class CodeEditor extends Component {
 
 	joinGame(e) {
 		e.preventDefault()
+		this.setState({joinDisable : true} )
 		const userCode = this.state.codeText
 		const playerName = this.state.playerName
 		socket.emit('newPlayer', {playerName})
@@ -133,6 +136,7 @@ class CodeEditor extends Component {
 					<br />
 					<button 
 						className='btn btn-primary'
+						disabled={this.state.joinDisable}
 						id="submitcode"> 
 						Join
 					</button>

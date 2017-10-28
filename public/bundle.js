@@ -46481,7 +46481,8 @@ class CodeEditor extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 			codeText: "function(history) { return 'rock'}",
 			playerName: "player name",
 			result: "",
-			challenger: ""
+			challenger: "",
+			joinDisable: false
 		};
 		this.joinGame = this.joinGame.bind(this);
 		this.runCode = this.runCode.bind(this);
@@ -46504,6 +46505,7 @@ class CodeEditor extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 		if (props.history.length != this.props.history.length) {
 			console.log('received props');
 			socket.emit('historyUpdated');
+			this.setState({ joinDisable: false });
 		}
 	}
 
@@ -46527,6 +46529,7 @@ class CodeEditor extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 
 	joinGame(e) {
 		e.preventDefault();
+		this.setState({ joinDisable: true });
 		const userCode = this.state.codeText;
 		const playerName = this.state.playerName;
 		socket.emit('newPlayer', { playerName });
@@ -46598,6 +46601,7 @@ class CodeEditor extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 					'button',
 					{
 						className: 'btn btn-primary',
+						disabled: this.state.joinDisable,
 						id: 'submitcode' },
 					'Join'
 				)

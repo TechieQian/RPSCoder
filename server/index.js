@@ -62,7 +62,11 @@ io.sockets.on('connection', function (socket) {
 				io.sockets.emit("runOnce")
 			}
 			else {
-				console.log('GAME IS DONE')
+				const p1 = game.players[0]
+				const p2 = game.players[1]
+				const p1WonGames = history.filter((round)=> {
+					round.winner && round.winner.player === p1
+				}).length
 				game = new Game()
 				history = []
 			}
