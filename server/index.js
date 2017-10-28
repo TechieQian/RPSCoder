@@ -77,7 +77,12 @@ class Game {
 	constructor() {
 		this.players = []
 		this.buffer = []
-		this.turns = 10
+		this.turns = 20
+		this.RPSTable = {
+			"paper" : "rock",
+			"rock"	: "scissors",
+			"scissors" : "paper"
+		}
 	}
 	addPlayer(player) {
 		this.players.push(player)
@@ -86,25 +91,25 @@ class Game {
 		console.log('resolving the game')
 		const p1 = this.buffer.pop()
 		const p2 = this.buffer.pop()
-		if (p1.result.length > p2.result.length) {
+		if ( p1.result === p2.result ) {
+			console.log('no winner?')
+			history.push({
+				"tie" : [{ 'player' : p2.playerName, 'move' : p2.result },
+								{ 'player' : p1.playerName, 'move' : p1.result }]
+			})
+		}
+		else if (this.RPSTable[p1.result] === p2.result) {
 			console.log(p1.playerName + ' wins')
 			history.push({
 				"winner" : { 'player' : p1.playerName, 'move' : p1.result },
 				"loser" : { 'player' : p2.playerName, 'move' : p2.result }
 			})
 		}
-		else if ( p1.result.length < p2.result.length ) {
+		else {
 			console.log(p2.playerName + " wins")
 			history.push({
 				"winner" : { 'player' : p2.playerName, 'move' : p2.result },
 				"loser" : { 'player' : p1.playerName, 'move' : p1.result }
-			})
-		}
-		else {
-			console.log('no winner?')
-			history.push({
-				"tie" : [{ 'player' : p2.playerName, 'move' : p2.result },
-								{ 'player' : p1.playerName, 'move' : p1.result }]
 			})
 		}
 	}
