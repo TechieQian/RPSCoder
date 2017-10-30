@@ -43,6 +43,7 @@ class CodeEditor extends Component {
 	
 	componentWillReceiveProps(props) {
 		if (props.history.length > this.props.history.length) {
+			console.log('Last Round: ', props.history[props.history.length-1])
 			socket.emit('historyUpdated')
 		}
 	}

@@ -31,7 +31,6 @@ const historyUpdatedListener = function(data) {
 // callback client function with latest history in the server.
 
 const getHistoryListener = function(cb) {
-	console.log('server sending history', this.history.length)
 	cb(this.history)
 }
 
