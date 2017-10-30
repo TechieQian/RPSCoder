@@ -9,7 +9,7 @@ class Main extends Component {
 			<div className='container'>
 				<h1>RPS Coder</h1>
 				<Instructions />
-				<div className='row'> 
+				<div className='row container'> 
 					<div className='col-sm-6'>
 						<CodeEditor />
 					</div>

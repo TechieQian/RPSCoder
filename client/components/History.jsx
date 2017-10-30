@@ -9,7 +9,6 @@ class History extends Component{
 				<h3> Match History </h3>
 				{
 					history.map((round,index)=> {
-						console.log(round)
 						return (
 							<div key={+index} className='panel panel-default'>
 								<div className='panel-heading'>

@@ -22368,7 +22368,8 @@ const reducer = function (state = defaultState, action) {
 	}
 };
 
-/* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* createStore */])(reducer, Object(__WEBPACK_IMPORTED_MODULE_0_redux__["a" /* applyMiddleware */])(__WEBPACK_IMPORTED_MODULE_2_redux_thunk___default.a, Object(__WEBPACK_IMPORTED_MODULE_1_redux_logger__["createLogger"])())));
+//createLogger() turned off currently.
+/* harmony default export */ __webpack_exports__["a"] = (Object(__WEBPACK_IMPORTED_MODULE_0_redux__["c" /* createStore */])(reducer, Object(__WEBPACK_IMPORTED_MODULE_0_redux__["a" /* applyMiddleware */])(__WEBPACK_IMPORTED_MODULE_2_redux_thunk___default.a)));
 
 /***/ }),
 /* 46 */
@@ -46428,7 +46429,7 @@ class Main extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 			__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(__WEBPACK_IMPORTED_MODULE_3__Instructions__["a" /* default */], null),
 			__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 				'div',
-				{ className: 'row' },
+				{ className: 'row container' },
 				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 					'div',
 					{ className: 'col-sm-6' },
@@ -46482,6 +46483,7 @@ class CodeEditor extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 			playerName: "player name",
 			result: "",
 			challenger: "",
+			winner: "",
 			joinDisable: false
 		};
 		this.joinGame = this.joinGame.bind(this);
@@ -46490,28 +46492,33 @@ class CodeEditor extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 		this.handleChange = this.handleChange.bind(this);
 		this.saveResult = this.saveResult.bind(this);
 		this.roundDone = this.roundDone.bind(this);
-		this.waiting = this.waiting.bind(this);
 	}
 
 	componentDidMount() {
+		const updateHistory = this.props.updateHistory;
 		socket.on('runOnce', this.runCode);
 		socket.on('roundDone', this.roundDone);
 		socket.on('waiting', data => {
 			this.setState({ challenger: data });
 		});
+		socket.on('gameOver', data => {
+			console.log('winner is', data);
+			this.setState({ challenger: "", joinDisable: false, result: "", winner: data });
+		});
 	}
 
+	//A little hack to make sure the client state is updated before emitting historyUpdated
+
 	componentWillReceiveProps(props) {
-		if (props.history.length != this.props.history.length) {
-			console.log('received props');
+		if (props.history.length > this.props.history.length) {
 			socket.emit('historyUpdated');
-			this.setState({ joinDisable: false });
 		}
 	}
 
 	roundDone() {
-		__WEBPACK_IMPORTED_MODULE_5_axios___default.a.get(`/history`).then(history => history.data).then(history => {
-			this.props.updateHistory(history);
+		const updateHistory = this.props.updateHistory;
+		socket.emit('getHistory', function (history) {
+			updateHistory(history);
 		});
 	}
 
@@ -46523,23 +46530,21 @@ class CodeEditor extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 		});
 	}
 
-	waiting() {
-		console.log('waiting for opponent');
-	}
+	//Clicking a button to join the game. Emits newPlayer to the server.
 
 	joinGame(e) {
 		e.preventDefault();
 		this.setState({ joinDisable: true });
+		this.props.updateHistory([]);
 		const userCode = this.state.codeText;
 		const playerName = this.state.playerName;
 		socket.emit('newPlayer', { playerName });
 	}
 
+	//Connects to Google caja server to run code safely. Save the result of the executed code.
+
 	runCode() {
-		if (this.state.challenger) {
-			this.setState({ challenger: "" });
-		}
-		console.log('running code!');
+		this.setState({ challenger: "", winner: "" });
 		const userCode = this.state.codeText;
 		const playerName = this.state.playerName;
 		const history = JSON.stringify(this.props.history);
@@ -46575,6 +46580,12 @@ class CodeEditor extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 				this.state.challenger,
 				' is waiting for you!'
 			),
+			this.state.winner && __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
+				'div',
+				{ className: 'alert alert-success' },
+				this.state.winner,
+				' won!'
+			),
 			__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 				'form',
 				{ onSubmit: this.joinGame },
@@ -46600,7 +46611,7 @@ class CodeEditor extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 				__WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 					'button',
 					{
-						className: 'btn btn-primary',
+						className: 'btn btn-primary btn-block',
 						disabled: this.state.joinDisable,
 						id: 'submitcode' },
 					'Join'
@@ -50627,7 +50638,6 @@ class History extends __WEBPACK_IMPORTED_MODULE_0_react__["Component"] {
 				' Match History '
 			),
 			history.map((round, index) => {
-				console.log(round);
 				return __WEBPACK_IMPORTED_MODULE_0_react___default.a.createElement(
 					'div',
 					{ key: +index, className: 'panel panel-default' },

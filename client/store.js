@@ -23,5 +23,5 @@ const reducer = function(state = defaultState, action) {
 	}
 }
 
-
-export default createStore(reducer, applyMiddleware(thunk, createLogger()))
+//createLogger() turned off currently.
+export default createStore(reducer, applyMiddleware(thunk))

@@ -15,6 +15,7 @@ class CodeEditor extends Component {
 			playerName : "player name",
 			result : "",
 			challenger : "",
+			winner : "",
 			joinDisable : false
 		}
 		this.joinGame = this.joinGame.bind(this)
@@ -23,58 +24,59 @@ class CodeEditor extends Component {
 		this.handleChange = this.handleChange.bind(this)
 		this.saveResult = this.saveResult.bind(this)
 		this.roundDone = this.roundDone.bind(this)
-		this.waiting = this.waiting.bind(this)
 	}
 
 	componentDidMount() {
-		socket.on('runOnce', this.runCode) 
+		const updateHistory = this.props.updateHistory
+		socket.on('runOnce', this.runCode)
 		socket.on('roundDone', this.roundDone)
 		socket.on('waiting', data=> {
 			this.setState( { challenger : data } )
 		})
+		socket.on('gameOver', data=> {
+			console.log('winner is', data)
+			this.setState( { challenger : "", joinDisable : false, result : "", winner : data } )
+		})
 	}
 
+	//A little hack to make sure the client state is updated before emitting historyUpdated
+	
 	componentWillReceiveProps(props) {
-		if (props.history.length != this.props.history.length) {
-			console.log('received props')
+		if (props.history.length > this.props.history.length) {
 			socket.emit('historyUpdated')
-			this.setState({joinDisable : false})
 		}
 	}
 
 	roundDone() {
-		axios.get(`/history`)
-			.then(history=>history.data)
-			.then(history=> {
-				this.props.updateHistory(history)
-      })
+		const updateHistory = this.props.updateHistory
+		socket.emit('getHistory', function(history){
+			updateHistory(history)
+		})
 	}
 
 	saveResult(result) {
 		this.setState({result})
-			socket.emit('newResult', {
-				playerName  : this.state.playerName,
-				result : this.state.result
-			})
+		socket.emit('newResult', {
+			playerName  : this.state.playerName,
+			result : this.state.result
+		})
 	}
 
-	waiting() {
-		console.log('waiting for opponent')
-	}
-
+	//Clicking a button to join the game. Emits newPlayer to the server.
+	
 	joinGame(e) {
 		e.preventDefault()
 		this.setState({joinDisable : true} )
+		this.props.updateHistory([])
 		const userCode = this.state.codeText
 		const playerName = this.state.playerName
 		socket.emit('newPlayer', {playerName})
 	}
 
+	//Connects to Google caja server to run code safely. Save the result of the executed code.
+	
 	runCode() {
-		if ( this.state.challenger ) {
-			this.setState({challenger : ""})
-		}
-		console.log('running code!')
+		this.setState({challenger : "", winner : ""})
 		const userCode = this.state.codeText
 		const playerName = this.state.playerName
 		const history = JSON.stringify(this.props.history)
@@ -114,6 +116,11 @@ class CodeEditor extends Component {
 							Challenger {this.state.challenger} is waiting for you!
 						</div>
 				}
+				{ this.state.winner && 
+						<div className="alert alert-success">
+							{this.state.winner} won!
+						</div>
+				}
 				<form onSubmit={this.joinGame}>
 					<input
 						name='playerName'
@@ -135,7 +142,7 @@ class CodeEditor extends Component {
 					/>
 					<br />
 					<button 
-						className='btn btn-primary'
+						className='btn btn-primary btn-block'
 						disabled={this.state.joinDisable}
 						id="submitcode"> 
 						Join
