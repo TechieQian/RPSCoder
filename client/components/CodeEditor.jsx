@@ -11,7 +11,9 @@ class CodeEditor extends Component {
 	constructor() {
 		super()
 		this.state = { 
-			codeText : "function(history) { return 'rock'}", 
+			codeText : `function RPS(helper) {
+	return 'rock'
+}`, 
 			playerName : "player name",
 			result : "",
 			challenger : "",
@@ -56,6 +58,7 @@ class CodeEditor extends Component {
 	}
 
 	saveResult(result) {
+		console.log('i played move', result)
 		this.setState({result})
 		socket.emit('newResult', {
 			playerName  : this.state.playerName,
@@ -77,13 +80,23 @@ class CodeEditor extends Component {
 	//Connects to Google caja server to run code safely. Save the result of the executed code.
 	
 	runCode() {
+
+		//helper objects
+		const history = this.props.history
+		const prevRound = history.length? history[history.length-1] : null
+		const helper = {
+			"PRE_ROUND" : prevRound,
+			"HISTORY"		: history,
+			"MOVE"			: ['rock', 'paper', 'scissors']
+		}
+
 		this.setState({challenger : "", winner : ""})
 		const userCode = this.state.codeText
 		const playerName = this.state.playerName
-		const history = JSON.stringify(this.props.history)
+		const helperString = JSON.stringify(helper)
 		const saveResult = this.saveResult
 		let trimmed = userCode.trim()
-		const rawCode = `return ${trimmed}.call(this, ${history})` 
+		const rawCode = `return ${trimmed}.call(this, ${helperString})` 
 		caja.load(
 			undefined,
 			undefined,
@@ -96,6 +109,9 @@ class CodeEditor extends Component {
 					.run(function(result) {
 						if(result) {
 							saveResult(result)
+						}
+						else {
+							saveResult('rock')
 						}
 					 });
 			})
@@ -111,31 +127,39 @@ class CodeEditor extends Component {
 
 	render() {
 		return (
-			<div className='row'>
-				{ this.state.challenger && 
+			<div className='container'>
+				<div className='row'>
+					<div className='col-sm-4'>
+						<input
+							name='playerName'
+							className='form-control'
+							value={this.state.playerName}
+							onChange={this.handleChange}
+						/>
+						<br />
+					</div>
+					<div className='col-sm-8'>
+					{ 
+						this.state.challenger && 
 						<div className="alert alert-info">
 							Challenger {this.state.challenger} is waiting for you!
 						</div>
-				}
-				{ this.state.winner && 
+					}
+					{ 
+						this.state.winner && 
 						<div className="alert alert-success">
 							{this.state.winner} won!
 						</div>
-				}
+					}
+					</div>
+				</div>
 				<form onSubmit={this.joinGame}>
-					<input
-						name='playerName'
-						className='form-control'
-						value={this.state.playerName}
-						onChange={this.handleChange}
-					/>
-					<br />
 				  <AceEditor
 						mode="javascript"
 						theme="monokai"
 						fontSize={24}
 						height='300px'
-						width='600px'
+						width='100%'
 						tabSize={2}
 						value={this.state.codeText}
 						onChange={this.editorChange}

@@ -5,11 +5,12 @@ class History extends Component{
 	render() {
 		const history = this.props.history
 		return (
-			<div>
+			<div className='container'>
 				<h3> Match History </h3>
 				{
 					history.map((round,index)=> {
 						return (
+							<div className='col-sm-3'>
 							<div key={+index} className='panel panel-default'>
 								<div className='panel-heading'>
 									Round : {+index + 1}
@@ -29,6 +30,7 @@ class History extends Component{
 									}
 								</div>
 							</div>
+						</div>
 						)
 					}) 
 				}

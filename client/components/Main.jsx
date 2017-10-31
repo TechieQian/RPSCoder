@@ -9,13 +9,11 @@ class Main extends Component {
 			<div className='container'>
 				<h1>RPS Coder</h1>
 				<Instructions />
-				<div className='row container'> 
-					<div className='col-sm-6'>
-						<CodeEditor />
-					</div>
-					<div className='col-sm-4 pull-right'>
-						<History />
-					</div>
+				<div className='row'> 
+					<CodeEditor />
+				</div>
+				<div className='row'>
+					<History />
 				</div>
 			</div>
 		)
