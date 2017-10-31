@@ -3,9 +3,9 @@ import React, {Component} from 'react'
 export default function Instructions() {
 	return (
 		<div>
-			<pre><code>{`Easy two player game. We will play Rock Paper Scissors for 20 rounds. You will write a function that returns either 'rock', 'paper', or 'scissors.' Once you hit join, your challenge will be "issued" to other people on this page. To best your opponent, I have exposed an array called 'history' for you. History starts empty. As the rounds go on, it logs the winner, loser, and their moves.
+			<pre><code>{`Easy two player game. We will play Rock Paper Scissors for 20 rounds. You will write a function that returns either 'rock', 'paper', or 'scissors.' Once you hit join, your challenge will be "issued" to other people on this page. 
 
-I have exposed an helper object for you. The helper object has 3 properties.
+To help you best inferior-coder opponents, I have exposed an helper object for you. The helper object has 3 properties.
 
 For example, to use the PRE_ROUND helper, invoke helper.PRE_ROUND
 
